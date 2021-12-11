@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation_mobile"
+    app:startDestination="@id/fragmentVP">
+
+    <fragment
+        android:id="@+id/fragmentVP"
+        android:name="ru.eyelog.recyclerviewworkshop.presentation.pragmentVP.FragmentVP"
+        android:label="ViewPager" />
+    <fragment
+        android:id="@+id/fragmentRV"
+        android:name="ru.eyelog.recyclerviewworkshop.presentation.pragmentRV.FragmentRV"
+        android:label="RecyclerView" />
+</navigation>
