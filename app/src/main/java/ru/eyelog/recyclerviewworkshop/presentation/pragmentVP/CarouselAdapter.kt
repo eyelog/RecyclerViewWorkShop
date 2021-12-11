@@ -42,18 +42,16 @@ class CarouselAdapter @Inject constructor(
 
         fun bind(carousel: List<CardModel>) {
 
-            with(itemView.vpCarousel) {
-                clipToPadding = false
-                clipChildren = false
+            val carouselViewPager = itemView.vpCarousel
+            with(carouselViewPager) {
                 offscreenPageLimit = 3
+                adapter = cardAdapter
             }
-
-            itemView.vpCarousel.adapter = cardAdapter
             cardAdapter.setItem(carousel)
 
-            val pageMarginPx = 10
-            val offsetPx = 16
-            itemView.vpCarousel.setPageTransformer { page, position ->
+            val pageMarginPx = itemView.resources.getDimensionPixelOffset(R.dimen.pageMargin)
+            val offsetPx = itemView.resources.getDimensionPixelOffset(R.dimen.offset)
+            carouselViewPager.setPageTransformer { page, position ->
                 val viewPager = page.parent.parent as ViewPager2
                 val offset = position * -(2 * offsetPx + pageMarginPx)
                 if (viewPager.orientation == ViewPager2.ORIENTATION_HORIZONTAL) {
