@@ -16,11 +16,11 @@ class ViewModelVP @Inject constructor(
     private val cardsFactory: CardsFactory
 ) : ViewModel(), LifecycleObserver {
 
-    val cardsLiveData: LiveData<List<List<CardModel>>> get() = _cardsLiveData
-    private val _cardsLiveData = MediatorLiveData<List<List<CardModel>>>()
+    val cardsLiveData: LiveData<List<CardModel>> get() = _cardsLiveData
+    private val _cardsLiveData = MediatorLiveData<List<CardModel>>()
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     private fun onCreate() {
-        _cardsLiveData.postValue(cardsFactory.getCars(12, 5))
+        _cardsLiveData.postValue(cardsFactory.getCars(5))
     }
 }
