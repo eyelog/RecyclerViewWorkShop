@@ -16,6 +16,15 @@
         android:clipChildren="false"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/vpCarousel01"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="32dp"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCarousel"
         android:layout_width="match_parent"
@@ -26,4 +35,10 @@
         android:clipChildren="false"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+    <Button
+        android:id="@+id/btTap"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:text="Tap"/>
 </LinearLayout>

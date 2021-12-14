@@ -4,27 +4,18 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 
-class HorizontalMarginSidePageTransformer(
+class MovePagerTransformer(
     private val itemsCount: Int
 ) : ViewPager2.PageTransformer {
 
     override fun transformPage(page: View, position: Float) {
         val viewPager = requireViewPager(page)
-        val offset = position * -2
-        page.translationY = offset
-
+        var offset = 32.toPx * position
         when (viewPager.currentItem) {
-            itemsCount - 1 -> {
-                with(viewPager) {
-                    setPadding(128, 0, 0, 0)
-                }
-            }
-            else -> {
-                with(viewPager) {
-                    setPadding(0, 0, 128, 0)
-                }
-            }
+            itemsCount - 1 -> offset += 32.toPx
+            else -> offset -= 32.toPx
         }
+        page.translationX = offset
     }
 
     private fun requireViewPager(page: View): ViewPager2 {

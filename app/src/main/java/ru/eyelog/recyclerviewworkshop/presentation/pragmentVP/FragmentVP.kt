@@ -15,11 +15,14 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.carousel_vp_item.view.vpCarousel
+import kotlinx.android.synthetic.main.fragment_main.btTap
 import kotlinx.android.synthetic.main.fragment_main.rvCarousel
 import kotlinx.android.synthetic.main.fragment_main.vpCarousel00
+import kotlinx.android.synthetic.main.fragment_main.vpCarousel01
 import ru.eyelog.recyclerviewworkshop.R
 import ru.eyelog.recyclerviewworkshop.presentation.pragmentRV.ViewModelRV
 import ru.eyelog.recyclerviewworkshop.presentation.pragmentVP.utils.HorizontalMarginSidePageTransformer
+import ru.eyelog.recyclerviewworkshop.presentation.pragmentVP.utils.MovePagerTransformer
 import ru.eyelog.recyclerviewworkshop.presentation.pragmentVP.utils.applyWindowInsetsOnItem
 import javax.inject.Inject
 
@@ -32,6 +35,8 @@ class FragmentVP : Fragment() {
     lateinit var cardAdapter: CardAdapter
 
     private val snapHelper = PagerSnapHelper()
+
+    private var currentPosition = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,15 +52,32 @@ class FragmentVP : Fragment() {
 
         lifecycle.addObserver(viewModel)
 
-        vpCarousel00.adapter = cardAdapter
         with(vpCarousel00) {
+            adapter = cardAdapter
             clipToPadding = false
             clipChildren = false
             offscreenPageLimit = 3
-            setPageTransformer(HorizontalMarginSidePageTransformer(6))
+            setPageTransformer(HorizontalMarginSidePageTransformer(3))
         }
 
+        with(vpCarousel01) {
+            adapter = cardAdapter
+            clipToPadding = false
+            clipChildren = false
+            offscreenPageLimit = 3
+            setPageTransformer(MovePagerTransformer(3))
+        }
 
+//
+//        btTap.setOnClickListener {
+//            if (currentPosition < 5){
+//                currentPosition++
+//            } else {
+//                currentPosition = 0
+//            }
+//
+//            vpCarousel00.setCurrentItem(currentPosition, true)
+//        }
 
 //        val pageMarginPx = resources.getDimensionPixelOffset(R.dimen.pageMargin)
 //        val offsetPx = resources.getDimensionPixelOffset(R.dimen.offset)

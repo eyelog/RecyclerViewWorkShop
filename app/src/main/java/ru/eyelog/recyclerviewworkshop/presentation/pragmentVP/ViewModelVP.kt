@@ -21,6 +21,6 @@ class ViewModelVP @Inject constructor(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     private fun onCreate() {
-        _cardsLiveData.postValue(cardsFactory.getCars(5))
+        _cardsLiveData.postValue(cardsFactory.getCars(2))
     }
 }
