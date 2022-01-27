@@ -1,4 +1,4 @@
-package ru.eyelog.recyclerviewworkshop.presentation.pragmentVP.utils
+package ru.eyelog.recyclerviewworkshop.presentation.fragmentVP.utils
 
 import android.graphics.Rect
 import android.os.Build

@@ -1,4 +1,4 @@
-package ru.eyelog.recyclerviewworkshop.presentation.pragmentVP
+package ru.eyelog.recyclerviewworkshop.presentation.fragmentRV
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -12,7 +12,7 @@ import ru.eyelog.recyclerviewworkshop.presentation.factory.CardsFactory
 import javax.inject.Inject
 
 @HiltViewModel
-class ViewModelVP @Inject constructor(
+class ViewModelRV @Inject constructor(
     private val cardsFactory: CardsFactory
 ) : ViewModel(), LifecycleObserver {
 
@@ -21,6 +21,6 @@ class ViewModelVP @Inject constructor(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     private fun onCreate() {
-        _cardsLiveData.postValue(cardsFactory.getCars(2))
+        _cardsLiveData.postValue(cardsFactory.getCars(10))
     }
 }

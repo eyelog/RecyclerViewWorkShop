@@ -1,4 +1,4 @@
-package ru.eyelog.recyclerviewworkshop.presentation.pragmentRV
+package ru.eyelog.recyclerviewworkshop.presentation.fragmentTP
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,9 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import ru.eyelog.recyclerviewworkshop.R
+import ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.ViewModelRV
 
 @AndroidEntryPoint
-class FragmentRV: Fragment() {
+class FragmentTP : Fragment() {
 
     private val viewModel: ViewModelRV by activityViewModels()
 
@@ -19,6 +20,6 @@ class FragmentRV: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        return inflater.inflate(R.layout.fragment_time_picker, container, false)
     }
 }

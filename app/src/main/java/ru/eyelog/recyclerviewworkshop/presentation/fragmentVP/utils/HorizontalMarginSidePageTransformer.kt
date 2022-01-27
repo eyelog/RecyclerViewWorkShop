@@ -1,21 +1,30 @@
-package ru.eyelog.recyclerviewworkshop.presentation.pragmentVP.utils
+package ru.eyelog.recyclerviewworkshop.presentation.fragmentVP.utils
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 
-class MovePagerTransformer(
+class HorizontalMarginSidePageTransformer(
     private val itemsCount: Int
 ) : ViewPager2.PageTransformer {
 
     override fun transformPage(page: View, position: Float) {
         val viewPager = requireViewPager(page)
-        var offset = 32.toPx * position
+        val offset = position * -2
+        page.translationY = offset
+
         when (viewPager.currentItem) {
-            itemsCount - 1 -> offset += 32.toPx
-            else -> offset -= 32.toPx
+            itemsCount - 1 -> {
+                with(viewPager) {
+                    setPadding(128, 0, 0, 0)
+                }
+            }
+            0 -> {
+                with(viewPager) {
+                    setPadding(0, 0, 128, 0)
+                }
+            }
         }
-        page.translationX = offset
     }
 
     private fun requireViewPager(page: View): ViewPager2 {

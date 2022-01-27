@@ -1,4 +1,4 @@
-package ru.eyelog.recyclerviewworkshop.presentation.pragmentVP
+package ru.eyelog.recyclerviewworkshop.presentation.fragmentRV
 
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +11,7 @@ import ru.eyelog.recyclerviewworkshop.R
 import ru.eyelog.recyclerviewworkshop.data.CardModel
 import javax.inject.Inject
 
-class CardAdapter @Inject constructor() : RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
+class VerticalCardAdapter @Inject constructor() : RecyclerView.Adapter<VerticalCardAdapter.CardViewHolder>() {
 
     var list: List<CardModel> = listOf()
 
@@ -20,7 +20,11 @@ class CardAdapter @Inject constructor() : RecyclerView.Adapter<CardAdapter.CardV
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-        holder.bind(list[position])
+        if (list.isEmpty()){
+            holder.bind(null)
+        } else {
+            holder.bind(list[position % list.size])
+        }
     }
 
     fun setItem(list: List<CardModel>) {
@@ -28,17 +32,19 @@ class CardAdapter @Inject constructor() : RecyclerView.Adapter<CardAdapter.CardV
         notifyDataSetChanged()
     }
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemCount() = Int.MAX_VALUE
 
     class CardViewHolder constructor(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
         constructor(parent: ViewGroup) :
-            this(LayoutInflater.from(parent.context).inflate(R.layout.card_item, parent, false))
+            this(LayoutInflater.from(parent.context).inflate(R.layout.vertical_card_item, parent, false))
 
-        fun bind(cardModel: CardModel) {
-            itemView.tvTitle.text = cardModel.title
-            itemView.tvSubTitle.text = cardModel.subTitle
-            itemView.ivIcon.setImageResource(cardModel.icon)
+        fun bind(cardModel: CardModel?) {
+            cardModel?.let {
+                itemView.tvTitle.text = cardModel.title
+                itemView.tvSubTitle.text = cardModel.subTitle
+                itemView.ivIcon.setImageResource(cardModel.icon)
+            }
         }
     }
 }

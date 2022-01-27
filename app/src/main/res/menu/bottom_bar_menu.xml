@@ -2,11 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/fragmentRV"
+        android:icon="@drawable/ic_menu_list"
+        android:title="RecyclerView" />
+    <item
         android:id="@+id/fragmentVP"
         android:icon="@drawable/ic_menu_list"
         android:title="ViewPager" />
     <item
-        android:id="@+id/fragmentRV"
+        android:id="@+id/fragmentTP"
         android:icon="@drawable/ic_menu_list"
-        android:title="RecyclerView" />
+        android:title="TimePicker" />
 </menu>

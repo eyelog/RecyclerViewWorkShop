@@ -1,4 +1,4 @@
-package ru.eyelog.recyclerviewworkshop.presentation.pragmentVP
+package ru.eyelog.recyclerviewworkshop.presentation.fragmentVP
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.carousel_vp_item.view.vpCarousel
 import ru.eyelog.recyclerviewworkshop.R
 import ru.eyelog.recyclerviewworkshop.data.CardModel
-import ru.eyelog.recyclerviewworkshop.presentation.pragmentVP.utils.HorizontalMarginSidePageTransformer
+import ru.eyelog.recyclerviewworkshop.presentation.fragmentVP.utils.HorizontalMarginSidePageTransformer
 import javax.inject.Inject
 
 class CarouselAdapter @Inject constructor(
