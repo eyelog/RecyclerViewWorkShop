@@ -8,8 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_main.rvCarousel
 import kotlinx.android.synthetic.main.fragment_vertical.buttonScroll
+import kotlinx.android.synthetic.main.fragment_vertical.rvCarousel
 import ru.eyelog.recyclerviewworkshop.R
 import javax.inject.Inject
 
@@ -17,6 +17,7 @@ import javax.inject.Inject
 class FragmentRV : Fragment() {
 
     private val viewModel: ViewModelRV by activityViewModels()
+    private val mLayoutManager = LinearLayoutManager(context)
 
     @Inject
     lateinit var cardAdapter: VerticalCardAdapter
@@ -34,7 +35,6 @@ class FragmentRV : Fragment() {
 
         lifecycle.addObserver(viewModel)
 
-        val mLayoutManager = LinearLayoutManager(context)
         rvCarousel.layoutManager = mLayoutManager
 
         rvCarousel.adapter = cardAdapter
@@ -43,8 +43,27 @@ class FragmentRV : Fragment() {
             cardAdapter.setItem(it)
         })
 
+        viewModel.scrollPosition.observe(viewLifecycleOwner, {
+            scrollToPosition(it)
+        })
+
+        viewModel.scrollDy.observe(viewLifecycleOwner, {
+            scrollToPositionByDx(it)
+        })
+
         buttonScroll.setOnClickListener {
-            rvCarousel.smoothScrollToPosition(150)
+            viewModel.moveToTarget()
         }
+
+        viewModel.startScrolling()
+    }
+
+    private fun scrollToPosition(position: Int){
+        rvCarousel.smoothScrollToPosition(position)
+    }
+
+    private fun scrollToPositionByDx(i: Int) {
+        rvCarousel.smoothScrollBy(0, i)
+        viewModel.setCurrentPosition(mLayoutManager.findFirstVisibleItemPosition())
     }
 }
