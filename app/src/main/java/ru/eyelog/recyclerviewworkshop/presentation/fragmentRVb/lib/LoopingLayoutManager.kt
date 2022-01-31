@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+/*
+* Taken from https://github.com/BeksOmega/looping-layout
+* */
+
 
 package ru.eyelog.recyclerviewworkshop.presentation.fragmentRVb.lib
 
