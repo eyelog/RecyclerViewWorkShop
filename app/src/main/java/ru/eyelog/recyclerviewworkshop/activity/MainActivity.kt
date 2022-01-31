@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
             setOf(
                 R.id.fragmentRV,
                 R.id.fragmentVP,
-                R.id.fragmentTP
+                R.id.fragmentVRb,
             )
         )
 

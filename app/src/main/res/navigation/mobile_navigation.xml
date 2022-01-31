@@ -13,7 +13,7 @@
         android:name="ru.eyelog.recyclerviewworkshop.presentation.fragmentVP.FragmentVP"
         android:label="ViewPager" />
     <fragment
-        android:id="@+id/fragmentTP"
-        android:name="ru.eyelog.recyclerviewworkshop.presentation.fragmentTP.FragmentTP"
+        android:id="@+id/fragmentVRb"
+        android:name="ru.eyelog.recyclerviewworkshop.presentation.fragmentRVb.FragmentRVb"
         android:label="TimePicker" />
 </navigation>

@@ -10,7 +10,7 @@
         android:icon="@drawable/ic_menu_list"
         android:title="ViewPager" />
     <item
-        android:id="@+id/fragmentTP"
+        android:id="@+id/fragmentVRb"
         android:icon="@drawable/ic_menu_list"
-        android:title="TimePicker" />
+        android:title="RecyclerViewB" />
 </menu>
