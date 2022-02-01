@@ -31,9 +31,14 @@ class ViewModelRV @Inject constructor(
     val scrollDy: LiveData<Int> get() = _scrollDy
     private val _scrollDy = MediatorLiveData<Int>()
 
+    val updateVheel: LiveData<Boolean> get() = _updateVheel
+    private val _updateVheel = MediatorLiveData<Boolean>()
+
     private var observable = Observable.interval(100L, TimeUnit.MILLISECONDS)
+    private var observableTimeout = Observable.timer(100L, TimeUnit.MILLISECONDS)
 
     lateinit var disposable: Disposable
+    lateinit var disposableTimeout: Disposable
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     private fun onCreate() {
@@ -44,13 +49,21 @@ class ViewModelRV @Inject constructor(
         disposable = observable.timeInterval()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
-                _scrollDy.postValue(30)
+                _scrollDy.postValue(-10)
+            }
+    }
+
+    fun startFirstPing(){
+        disposableTimeout = observableTimeout.timeout(300L, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                _updateVheel.postValue(true)
             }
     }
 
     fun moveToTarget() {
         disposable.dispose()
-        _scrollPosition.postValue(currentPosition + 150)
+        _scrollPosition.postValue(currentPosition - 150)
     }
 
     fun setCurrentPosition(position: Int){

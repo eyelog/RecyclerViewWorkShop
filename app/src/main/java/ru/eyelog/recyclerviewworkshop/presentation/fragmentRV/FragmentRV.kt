@@ -17,7 +17,9 @@ import javax.inject.Inject
 class FragmentRV : Fragment() {
 
     private val viewModel: ViewModelRV by activityViewModels()
-    private val mLayoutManager = LinearLayoutManager(context)
+
+    //    private val mLayoutManager = LinearLayoutManager(context)
+    private val mLayoutManager = CenterZoomLayoutManager(context)
 
     @Inject
     lateinit var cardAdapter: VerticalCardAdapter
@@ -41,6 +43,9 @@ class FragmentRV : Fragment() {
 
         viewModel.cardsLiveData.observe(viewLifecycleOwner, {
             cardAdapter.setItem(it)
+            rvCarousel.scrollToPosition(Int.MAX_VALUE / 2)
+//            viewModel.startScrolling()
+            viewModel.startFirstPing()
         })
 
         viewModel.scrollPosition.observe(viewLifecycleOwner, {
@@ -51,14 +56,16 @@ class FragmentRV : Fragment() {
             scrollToPositionByDx(it)
         })
 
+        viewModel.updateVheel.observe(viewLifecycleOwner, {
+            mLayoutManager.updateItemsFit()
+        })
+
         buttonScroll.setOnClickListener {
             viewModel.moveToTarget()
         }
-
-        viewModel.startScrolling()
     }
 
-    private fun scrollToPosition(position: Int){
+    private fun scrollToPosition(position: Int) {
         rvCarousel.smoothScrollToPosition(position)
     }
 
