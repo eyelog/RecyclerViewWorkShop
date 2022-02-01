@@ -6,11 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_vertical.buttonScroll
 import kotlinx.android.synthetic.main.fragment_vertical.rvCarousel
 import ru.eyelog.recyclerviewworkshop.R
+import ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.localutils.SnapListenerBehavior
+import ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.localutils.SnapOnScrollListener
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -20,6 +22,15 @@ class FragmentRV : Fragment() {
 
     //    private val mLayoutManager = LinearLayoutManager(context)
     private val mLayoutManager = CenterZoomLayoutManager(context)
+    private val snapHelper = LinearSnapHelper()
+    private val itemScrollPosition = { position: Int ->
+        // will show the prize
+    }
+    private val snapOnScrollListener = SnapOnScrollListener(
+        snapHelper,
+        SnapListenerBehavior.NOTIFY_ON_SCROLL_STATE_IDLE,
+        itemScrollPosition
+    )
 
     @Inject
     lateinit var cardAdapter: VerticalCardAdapter
@@ -38,7 +49,8 @@ class FragmentRV : Fragment() {
         lifecycle.addObserver(viewModel)
 
         rvCarousel.layoutManager = mLayoutManager
-
+        rvCarousel.addOnScrollListener(snapOnScrollListener)
+        snapHelper.attachToRecyclerView(rvCarousel)
         rvCarousel.adapter = cardAdapter
 
         viewModel.cardsLiveData.observe(viewLifecycleOwner, {
