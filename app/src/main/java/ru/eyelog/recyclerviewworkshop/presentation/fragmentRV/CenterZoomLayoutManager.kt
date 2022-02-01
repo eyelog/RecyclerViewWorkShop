@@ -12,11 +12,9 @@ import androidx.recyclerview.widget.RecyclerView.Recycler
 import ru.eyelog.recyclerviewworkshop.R
 import kotlin.math.abs
 
-class CenterZoomLayoutManager : LinearLayoutManager {
+class CenterZoomLayoutManager(context: Context?) : LinearLayoutManager(context) {
     private val mShrinkAmount = 0.30f
     private val mShrinkDistance = 1.0f
-
-    constructor(context: Context?) : super(context) {}
 
     override fun scrollVerticallyBy(dy: Int, recycler: Recycler, state: RecyclerView.State): Int {
         val scrolled = super.scrollVerticallyBy(dy, recycler, state)
