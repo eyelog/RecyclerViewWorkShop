@@ -2,10 +2,7 @@ package ru.eyelog.recyclerviewworkshop.presentation.fragmentRV
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.ColorSpace
-import android.util.Log
 import android.view.View
-import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
@@ -14,7 +11,7 @@ import kotlin.math.abs
 
 class CenterZoomLayoutManager(context: Context?) : LinearLayoutManager(context) {
     private val mShrinkAmount = 0.30f
-    private val mShrinkDistance = 1.0f
+    private val mShrinkDistance = 1.5f
 
     override fun scrollVerticallyBy(dy: Int, recycler: Recycler, state: RecyclerView.State): Int {
         val scrolled = super.scrollVerticallyBy(dy, recycler, state)
@@ -49,10 +46,17 @@ class CenterZoomLayoutManager(context: Context?) : LinearLayoutManager(context) 
     }
 
     private fun checkOpacity(fl: Float): Float {
-        return if (fl <= 1f){
+        return if (fl <= 1f) {
             fl
         } else {
             1f
         }
+    }
+
+    private fun resize(view: View, scaleX: Float, scaleY: Float) {
+        val layoutParams = view.layoutParams
+        layoutParams.width = (view.width * scaleX).toInt()
+        layoutParams.height = (view.height * scaleY).toInt()
+        view.layoutParams = layoutParams
     }
 }

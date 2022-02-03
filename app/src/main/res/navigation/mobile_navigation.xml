@@ -16,4 +16,8 @@
         android:id="@+id/fragmentVRb"
         android:name="ru.eyelog.recyclerviewworkshop.presentation.fragmentRVb.FragmentRVb"
         android:label="TimePicker" />
+    <fragment
+        android:id="@+id/fragmentSS"
+        android:name="ru.eyelog.recyclerviewworkshop.presentation.fragmentShop.FragmentScaleShop"
+        android:label="ScaleShop" />
 </navigation>

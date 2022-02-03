@@ -13,4 +13,8 @@
         android:id="@+id/fragmentVRb"
         android:icon="@drawable/ic_menu_list"
         android:title="RecyclerViewB" />
+    <item
+        android:id="@+id/fragmentSS"
+        android:icon="@drawable/ic_menu_list"
+        android:title="ScaleShop" />
 </menu>

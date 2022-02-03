@@ -1,19 +1,16 @@
 package ru.eyelog.recyclerviewworkshop.presentation.fragmentRVb
 
-import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_vertical.rvCarousel
 import ru.eyelog.recyclerviewworkshop.R
-import ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.VerticalCardAdapter
 import ru.eyelog.recyclerviewworkshop.presentation.fragmentRVb.lib.LoopingLayoutManager
 import javax.inject.Inject
 

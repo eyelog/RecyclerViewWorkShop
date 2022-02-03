@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_vertical.buttonScroll
 import kotlinx.android.synthetic.main.fragment_vertical.rvCarousel
 import ru.eyelog.recyclerviewworkshop.R
+import ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.localutils.HideLastDecorator
 import ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.localutils.SnapListenerBehavior
 import ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.localutils.SnapOnScrollListener
 import javax.inject.Inject
@@ -52,12 +53,13 @@ class FragmentRV : Fragment() {
         rvCarousel.addOnScrollListener(snapOnScrollListener)
         snapHelper.attachToRecyclerView(rvCarousel)
         rvCarousel.adapter = cardAdapter
+//        rvCarousel.addItemDecoration(HideLastDecorator())
 
         viewModel.cardsLiveData.observe(viewLifecycleOwner, {
             cardAdapter.setItem(it)
             rvCarousel.scrollToPosition(Int.MAX_VALUE / 2)
-//            viewModel.startScrolling()
-            viewModel.startFirstPing()
+            viewModel.startScrolling()
+//            viewModel.startFirstPing()
         })
 
         viewModel.scrollPosition.observe(viewLifecycleOwner, {
@@ -84,5 +86,6 @@ class FragmentRV : Fragment() {
     private fun scrollToPositionByDx(i: Int) {
         rvCarousel.smoothScrollBy(0, i)
         viewModel.setCurrentPosition(mLayoutManager.findFirstVisibleItemPosition())
+        mLayoutManager.findFirstCompletelyVisibleItemPosition()
     }
 }

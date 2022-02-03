@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.fragmentRV,
                 R.id.fragmentVP,
                 R.id.fragmentVRb,
+                R.id.fragmentSS,
             )
         )
 
