@@ -8,10 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import ru.eyelog.recyclerviewworkshop.R
 import kotlin.math.abs
+import kotlin.math.pow
 
 class CenterZoomLayoutManager(context: Context?) : LinearLayoutManager(context) {
     private val mShrinkAmount = 0.30f
-    private val mShrinkDistance = 1.5f
+    private val mShrinkDistance = 1.3f
 
     override fun scrollVerticallyBy(dy: Int, recycler: Recycler, state: RecyclerView.State): Int {
         val scrolled = super.scrollVerticallyBy(dy, recycler, state)
@@ -34,6 +35,9 @@ class CenterZoomLayoutManager(context: Context?) : LinearLayoutManager(context) 
                 val scale = s0 + (s1 - s0) * (d - d0) / (d1 - d0)
                 child.scaleX = scale
                 child.scaleY = scale
+
+                val translateY = ((childMidpoint - midpoint) / 250 / scale).pow(3) * -1
+                child.translationY = translateY
 
                 val opacity = checkOpacity(abs(childMidpoint - midpoint) / midpoint)
                 val stringOpacity = "%02x".format((opacity * 255).toInt())

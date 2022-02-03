@@ -34,15 +34,23 @@ class FragmentScaleShop: Fragment() {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
 //                viewSap00.scaleX = seekBar.progress.toFloat() / 100f
 //                viewSap00.scaleY = seekBar.progress.toFloat() / 100f
-                resize(viewSap00, seekBar.progress.toFloat(), seekBar.progress.toFloat())
-                viewSap01.scaleX = seekBar.progress.toFloat() / 100f
-                viewSap01.scaleY = seekBar.progress.toFloat() / 100f
-                viewSap02.scaleX = seekBar.progress.toFloat() / 100f
-                viewSap02.scaleY = seekBar.progress.toFloat() / 100f
-                viewSap03.scaleX = seekBar.progress.toFloat() / 100f
-                viewSap03.scaleY = seekBar.progress.toFloat() / 100f
-                activation_layout.scaleX = seekBar.progress.toFloat() / 100f
-                activation_layout.scaleY = seekBar.progress.toFloat() / 100f
+//                resize(viewSap00, seekBar.progress.toFloat(), seekBar.progress.toFloat())
+//                viewSap01.scaleX = seekBar.progress.toFloat() / 100f
+//                viewSap01.scaleY = seekBar.progress.toFloat() / 100f
+                viewSap01.setPadding(
+                    viewSap01.paddingLeft,
+                    seekBar.progress,
+                    viewSap01.paddingRight,
+                    (viewSap01.paddingBottom * seekBar.progress.toFloat() / 10f).toInt()
+                )
+                viewSap01.translationY = seekBar.progress.toFloat()
+                view.invalidate()
+//                viewSap02.scaleX = seekBar.progress.toFloat() / 100f
+//                viewSap02.scaleY = seekBar.progress.toFloat() / 100f
+//                viewSap03.scaleX = seekBar.progress.toFloat() / 100f
+//                viewSap03.scaleY = seekBar.progress.toFloat() / 100f
+//                activation_layout.scaleX = seekBar.progress.toFloat() / 100f
+//                activation_layout.scaleY = seekBar.progress.toFloat() / 100f
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {}

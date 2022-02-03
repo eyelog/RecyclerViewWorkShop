@@ -11,7 +11,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_vertical.buttonScroll
 import kotlinx.android.synthetic.main.fragment_vertical.rvCarousel
 import ru.eyelog.recyclerviewworkshop.R
-import ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.localutils.HideLastDecorator
 import ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.localutils.SnapListenerBehavior
 import ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.localutils.SnapOnScrollListener
 import javax.inject.Inject
@@ -21,15 +20,14 @@ class FragmentRV : Fragment() {
 
     private val viewModel: ViewModelRV by activityViewModels()
 
-    //    private val mLayoutManager = LinearLayoutManager(context)
     private val mLayoutManager = CenterZoomLayoutManager(context)
     private val snapHelper = LinearSnapHelper()
     private val itemScrollPosition = { position: Int ->
-        // will show the prize
+        viewModel.setCurrentPosition(position)
     }
     private val snapOnScrollListener = SnapOnScrollListener(
         snapHelper,
-        SnapListenerBehavior.NOTIFY_ON_SCROLL_STATE_IDLE,
+        SnapListenerBehavior.NOTIFY_ON_SCROLL,
         itemScrollPosition
     )
 
@@ -58,8 +56,8 @@ class FragmentRV : Fragment() {
         viewModel.cardsLiveData.observe(viewLifecycleOwner, {
             cardAdapter.setItem(it)
             rvCarousel.scrollToPosition(Int.MAX_VALUE / 2)
-            viewModel.startScrolling()
-//            viewModel.startFirstPing()
+//            viewModel.startScrolling()
+            viewModel.startFirstPing()
         })
 
         viewModel.scrollPosition.observe(viewLifecycleOwner, {
