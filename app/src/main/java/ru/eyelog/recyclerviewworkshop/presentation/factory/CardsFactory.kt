@@ -3,7 +3,6 @@ package ru.eyelog.recyclerviewworkshop.presentation.factory
 import ru.eyelog.recyclerviewworkshop.R
 import ru.eyelog.recyclerviewworkshop.data.CardModel
 import javax.inject.Inject
-import kotlin.random.Random
 
 class CardsFactory @Inject constructor() {
 

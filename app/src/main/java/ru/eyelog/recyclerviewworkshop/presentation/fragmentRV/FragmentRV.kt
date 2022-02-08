@@ -56,8 +56,8 @@ class FragmentRV : Fragment() {
         viewModel.cardsLiveData.observe(viewLifecycleOwner, {
             cardAdapter.setItem(it)
             rvCarousel.scrollToPosition(Int.MAX_VALUE / 2)
-//            viewModel.startScrolling()
-            viewModel.startFirstPing()
+            viewModel.startScrolling()
+//            viewModel.startFirstPing()
         })
 
         viewModel.scrollPosition.observe(viewLifecycleOwner, {
@@ -66,10 +66,15 @@ class FragmentRV : Fragment() {
 
         viewModel.scrollDy.observe(viewLifecycleOwner, {
             scrollToPositionByDx(it)
+//            Log.i("Logcat", "position ${rvCarousel.get}")
         })
 
         viewModel.updateVheel.observe(viewLifecycleOwner, {
             mLayoutManager.updateItemsFit()
+        })
+
+        viewModel.setTargetPosition.observe(viewLifecycleOwner, {
+            buttonScroll.text = "Крутить до $it"
         })
 
         buttonScroll.setOnClickListener {
