@@ -6,6 +6,10 @@
         android:icon="@drawable/ic_menu_list"
         android:title="RecyclerView" />
     <item
+        android:id="@+id/fragmentRVa"
+        android:icon="@drawable/ic_menu_list"
+        android:title="RecyclerViewA" />
+    <item
         android:id="@+id/fragmentVP"
         android:icon="@drawable/ic_menu_list"
         android:title="ViewPager" />

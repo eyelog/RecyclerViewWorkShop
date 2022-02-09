@@ -1,5 +1,6 @@
-package ru.eyelog.recyclerviewworkshop.presentation.fragmentRV
+package ru.eyelog.recyclerviewworkshop.presentation.fragmentRVa
 
+import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
@@ -14,10 +15,12 @@ import ru.eyelog.recyclerviewworkshop.data.CardModel
 import ru.eyelog.recyclerviewworkshop.presentation.factory.CardsFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.math.pow
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 @HiltViewModel
-class ViewModelRV @Inject constructor(
+class ViewModelRVa @Inject constructor(
     private val cardsFactory: CardsFactory
 ) : ViewModel(), LifecycleObserver {
 
@@ -37,9 +40,6 @@ class ViewModelRV @Inject constructor(
 
     val setTargetPosition: LiveData<Int> get() = _setTargetPosition
     private val _setTargetPosition = MediatorLiveData<Int>()
-
-    val removeScrollListener: LiveData<Boolean> get() = _removeScrollListener
-    private val _removeScrollListener = MediatorLiveData<Boolean>()
 
     private var observable = Observable.interval(100L, TimeUnit.MILLISECONDS)
     private var observableTimeout = Observable.timer(100L, TimeUnit.MILLISECONDS)
@@ -72,28 +72,6 @@ class ViewModelRV @Inject constructor(
         }
     }
 
-    fun startSmoothFinisher(position: Int) {
-//        if (!isFinisherActive){
-//            isFinisherActive = true
-            val smoothEmitter = Observable.range(1, 5)
-                .concatMap { i: Int ->
-                    Observable.just(
-                        i
-                    ).delay(300, TimeUnit.MILLISECONDS)
-                }
-                .doOnComplete {
-                    smoothDisposable.dispose()
-                    _removeScrollListener.postValue(true)
-                }
-
-            smoothDisposable = smoothEmitter
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    _scrollPosition.postValue(position - it)
-                }
-//        }
-    }
-
     fun startFirstPing() {
         disposableTimeout = observableTimeout.timeout(300L, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
@@ -106,7 +84,28 @@ class ViewModelRV @Inject constructor(
         isRollScrolling = false
         isFinisherActive = false
         disposable.dispose()
-        _scrollPosition.postValue(Int.MAX_VALUE / 2 - currentList.size * 10 + targetPosition - 2)
+        val smoothEmitter = Observable.range(0, 50)
+            .concatMap { i: Int ->
+                Observable.just(i)
+                    .delay(
+                        ((5.0.pow(2) - (i / 10).toDouble().pow(2))).toLong(),
+                        TimeUnit.MILLISECONDS
+                    )
+                    .map {
+                        Log.i("Logcat", "timer ${((5.0.pow(2) - (i / 10).toDouble().pow(2))).toLong()}")
+                        it
+                    }
+            }
+            .doOnComplete {
+                smoothDisposable.dispose()
+            }
+        smoothDisposable = smoothEmitter
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                Log.i("Logcat", "emitter ${-it.toDouble().pow(2).toInt()}")
+                _scrollDy.postValue(-it.toDouble().pow(2).toInt())
+                Log.i("Logcat", "    ")
+            }
     }
 
     private fun getFirstNumberAfterDot(a: Int, b: Int): Int {

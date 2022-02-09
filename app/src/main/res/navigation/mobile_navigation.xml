@@ -9,6 +9,10 @@
         android:name="ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.FragmentRV"
         android:label="RecyclerView" />
     <fragment
+        android:id="@+id/fragmentRVa"
+        android:name="ru.eyelog.recyclerviewworkshop.presentation.fragmentRVa.FragmentRVa"
+        android:label="RecyclerView" />
+    <fragment
         android:id="@+id/fragmentVP"
         android:name="ru.eyelog.recyclerviewworkshop.presentation.fragmentVP.FragmentVP"
         android:label="ViewPager" />

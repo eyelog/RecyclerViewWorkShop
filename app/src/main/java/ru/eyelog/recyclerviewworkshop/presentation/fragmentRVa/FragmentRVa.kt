@@ -1,4 +1,4 @@
-package ru.eyelog.recyclerviewworkshop.presentation.fragmentRV
+package ru.eyelog.recyclerviewworkshop.presentation.fragmentRVa
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,11 +16,11 @@ import ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.localutils.SnapOnS
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FragmentRV : Fragment() {
+class FragmentRVa : Fragment() {
 
-    private val viewModel: ViewModelRV by activityViewModels()
+    private val viewModel: ViewModelRVa by activityViewModels()
 
-    private val mLayoutManager = CenterZoomLayoutManager(context)
+    private val mLayoutManager = CenterZoomLayoutManagerRVa(context)
     private val snapHelper = LinearSnapHelper()
     private val itemScrollPosition = { position: Int ->
         viewModel.setCurrentPosition(position)
@@ -30,17 +30,9 @@ class FragmentRV : Fragment() {
         SnapListenerBehavior.NOTIFY_ON_SCROLL,
         itemScrollPosition
     )
-    private val itemStopScrollPosition = { position: Int ->
-        viewModel.startSmoothFinisher(position)
-    }
-    private val snapOnStopScrollListener = SnapOnScrollListener(
-        snapHelper,
-        SnapListenerBehavior.NOTIFY_ON_SCROLL_STATE_IDLE,
-        itemStopScrollPosition
-    )
 
     @Inject
-    lateinit var cardAdapter: VerticalCardAdapter
+    lateinit var cardAdapter: VerticalCardAdapterRVa
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,7 +49,6 @@ class FragmentRV : Fragment() {
 
         rvCarousel.layoutManager = mLayoutManager
         rvCarousel.addOnScrollListener(snapOnScrollListener)
-        rvCarousel.addOnScrollListener(snapOnStopScrollListener)
         snapHelper.attachToRecyclerView(rvCarousel)
         rvCarousel.adapter = cardAdapter
 //        rvCarousel.addItemDecoration(HideLastDecorator())
@@ -84,10 +75,6 @@ class FragmentRV : Fragment() {
 
         viewModel.setTargetPosition.observe(viewLifecycleOwner, {
             buttonScroll.text = "Крутить до $it"
-        })
-
-        viewModel.removeScrollListener.observe(viewLifecycleOwner, {
-            rvCarousel.removeOnScrollListener(snapOnStopScrollListener)
         })
 
         buttonScroll.setOnClickListener {
