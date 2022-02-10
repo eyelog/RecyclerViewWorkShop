@@ -16,7 +16,6 @@ import ru.eyelog.recyclerviewworkshop.presentation.factory.CardsFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.pow
-import kotlin.math.sqrt
 import kotlin.random.Random
 
 @HiltViewModel
@@ -46,7 +45,8 @@ class ViewModelRVa @Inject constructor(
 
     lateinit var disposable: Disposable
     lateinit var disposableTimeout: Disposable
-    lateinit var smoothDisposable: Disposable
+    lateinit var startSmoothDisposable: Disposable
+    lateinit var stopSmoothDisposable: Disposable
     var isRollScrolling = false
     var isFinisherActive = false
 
@@ -67,13 +67,14 @@ class ViewModelRVa @Inject constructor(
             disposable = observable.timeInterval()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
+                    Log.i("Logcat", "scrollDy")
                     _scrollDy.postValue(-10)
                 }
         }
     }
 
     fun startFirstPing() {
-        disposableTimeout = observableTimeout.timeout(300L, TimeUnit.MILLISECONDS)
+        disposableTimeout = observableTimeout.timeout(100L, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 _updateVheel.postValue(true)
@@ -84,26 +85,53 @@ class ViewModelRVa @Inject constructor(
         isRollScrolling = false
         isFinisherActive = false
         disposable.dispose()
-        val smoothEmitter = Observable.range(0, 50)
+        val startSmoothEmitter = Observable.range(3, 50)
             .concatMap { i: Int ->
                 Observable.just(i)
-                    .delay(
-                        ((5.0.pow(2) - (i / 10).toDouble().pow(2))).toLong(),
-                        TimeUnit.MILLISECONDS
-                    )
+                    .delay(100L, TimeUnit.MILLISECONDS)
                     .map {
-                        Log.i("Logcat", "timer ${((5.0.pow(2) - (i / 10).toDouble().pow(2))).toLong()}")
+                        Log.i("Logcat start", "timer ${i.toDouble().pow(3) / 300}")
+//                        Log.i("Logcat start", "timer ${((5.0.pow(2) - (i / 10).toDouble().pow(2))).toLong()}")
                         it
                     }
             }
             .doOnComplete {
-                smoothDisposable.dispose()
+                Log.i("Logcat start", "doOnComplete")
+                startSmoothDisposable.dispose()
             }
-        smoothDisposable = smoothEmitter
+        startSmoothDisposable = startSmoothEmitter
+            .observeOn(AndroidSchedulers.mainThread())
+            .doFinally {
+                Log.i("Logcat start", "doFinally")
+                stopSmooth()
+            }
+            .subscribe {
+                Log.i("Logcat start", "emitter ${-(it.toDouble().pow(3) / 300).toInt()}")
+                _scrollDy.postValue(-(it.toDouble().pow(3) / 300).toInt())
+                Log.i("Logcat", "*************************")
+            }
+
+    }
+
+    fun stopSmooth() {
+        Log.i("Logcat", "Start stop fun")
+        val stopSmoothEmitter = Observable.range(3, 50)
+            .concatMap { i: Int ->
+                Observable.just(i)
+                    .delay(100L, TimeUnit.MILLISECONDS)
+                    .map {
+                        Log.i("Logcat stop", "timer ${(50 - i).toDouble().pow(3) / 300}")
+                        50 - i
+                    }
+            }
+            .doOnComplete {
+//                stopSmoothDisposable.dispose()
+            }
+        stopSmoothDisposable = stopSmoothEmitter
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
-                Log.i("Logcat", "emitter ${-it.toDouble().pow(2).toInt()}")
-                _scrollDy.postValue(-it.toDouble().pow(2).toInt())
+                Log.i("Logcat start", "emitter ${-(it.toDouble().pow(3) / 300).toInt()}")
+                _scrollDy.postValue(-((it).toDouble().pow(3) / 300).toInt())
                 Log.i("Logcat", "    ")
             }
     }
