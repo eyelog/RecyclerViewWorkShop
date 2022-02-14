@@ -2,23 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/fragmentRVa"
-        android:icon="@drawable/ic_menu_list"
-        android:title="RecyclerViewA" />
-    <item
         android:id="@+id/fragmentRV"
         android:icon="@drawable/ic_menu_list"
         android:title="RecyclerView" />
     <item
-        android:id="@+id/fragmentVP"
+        android:id="@+id/fragmentRVa"
         android:icon="@drawable/ic_menu_list"
-        android:title="ViewPager" />
+        android:title="RecyclerViewA" />
+    <item
+        android:id="@+id/fragmentRVc"
+        android:icon="@drawable/ic_menu_list"
+        android:title="RecyclerViewC" />
     <item
         android:id="@+id/fragmentVRb"
         android:icon="@drawable/ic_menu_list"
         android:title="RecyclerViewB" />
-    <item
-        android:id="@+id/fragmentSS"
-        android:icon="@drawable/ic_menu_list"
-        android:title="ScaleShop" />
 </menu>

@@ -27,10 +27,9 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.fragmentRVa,
+                R.id.fragmentRVc,
                 R.id.fragmentRV,
-                R.id.fragmentVP,
                 R.id.fragmentVRb,
-                R.id.fragmentSS,
             )
         )
 

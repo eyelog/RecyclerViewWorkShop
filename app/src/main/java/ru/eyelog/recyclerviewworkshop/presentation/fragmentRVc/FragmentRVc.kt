@@ -1,6 +1,7 @@
-package ru.eyelog.recyclerviewworkshop.presentation.fragmentRV
+package ru.eyelog.recyclerviewworkshop.presentation.fragmentRVc
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,18 +11,18 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_vertical.buttonScroll
-import kotlinx.android.synthetic.main.fragment_vertical.rvCarousel
+import kotlinx.android.synthetic.main.fragment_vertical_with_tapper.rvCarousel
 import ru.eyelog.recyclerviewworkshop.R
 import ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.localutils.SnapListenerBehavior
 import ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.localutils.SnapOnScrollListener
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FragmentRV : Fragment() {
+class FragmentRVc : Fragment() {
 
-    private val viewModel: ViewModelRV by activityViewModels()
+    private val viewModel: ViewModelRVc by activityViewModels()
 
-    private val mLayoutManager = CenterZoomLayoutManager(context)
+    private val mLayoutManager = CenterZoomLayoutManagerRVc(context)
     private val snapHelper = LinearSnapHelper()
     private val itemScrollPosition = { position: Int ->
         viewModel.setCurrentPosition(position)
@@ -31,24 +32,18 @@ class FragmentRV : Fragment() {
         SnapListenerBehavior.NOTIFY_ON_SCROLL,
         itemScrollPosition
     )
-    private val itemStopScrollPosition = { position: Int ->
-        viewModel.startSmoothFinisher(position)
-    }
-    private val snapOnStopScrollListener = SnapOnScrollListener(
-        snapHelper,
-        SnapListenerBehavior.NOTIFY_ON_SCROLL_STATE_IDLE,
-        itemStopScrollPosition
-    )
+
+    private var fragmentPatchCounter = 0
 
     @Inject
-    lateinit var cardAdapter: VerticalCardAdapter
+    lateinit var cardAdapter: VerticalCardAdapterRVc
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_vertical, container, false)
+        return inflater.inflate(R.layout.fragment_vertical_with_tapper, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,14 +53,19 @@ class FragmentRV : Fragment() {
 
         rvCarousel.layoutManager = mLayoutManager
         rvCarousel.addOnScrollListener(snapOnScrollListener)
-        rvCarousel.addOnScrollListener(snapOnStopScrollListener)
         snapHelper.attachToRecyclerView(rvCarousel)
         rvCarousel.adapter = cardAdapter
-//        rvCarousel.addItemDecoration(HideLastDecorator())
+//        rvCarousel.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+//                super.onScrolled(recyclerView, dx, dy)
+////                Log.i("Logcat", "dy $dy")
+//                viewModel.setPath(dy)
+//            }
+//        })
 
         viewModel.cardsLiveData.observe(viewLifecycleOwner, {
             cardAdapter.setItem(it)
-            rvCarousel.scrollToPosition(Int.MAX_VALUE / 2)
+            rvCarousel.scrollToPosition(((Int.MAX_VALUE / 2) / it.size) * it.size - 2)
             viewModel.startScrolling()
 //            viewModel.startFirstPing()
         })
@@ -76,7 +76,6 @@ class FragmentRV : Fragment() {
 
         viewModel.scrollDy.observe(viewLifecycleOwner, {
             scrollToPositionByDx(it)
-//            Log.i("Logcat", "position ${rvCarousel.get}")
         })
 
         viewModel.updateVheel.observe(viewLifecycleOwner, {
@@ -87,12 +86,21 @@ class FragmentRV : Fragment() {
             buttonScroll.text = "Крутить до $it"
         })
 
-        viewModel.removeScrollListener.observe(viewLifecycleOwner, {
-            rvCarousel.removeOnScrollListener(snapOnStopScrollListener)
-        })
-
         buttonScroll.setOnClickListener {
-            viewModel.moveToTarget()
+//            Log.i("Logcat", "item height ${cardAdapter.getItemHeight()}")
+
+//            viewModel.moveToTarget(cardAdapter.getItemHeight())
+            Log.i("Logcat", "FirstVisibleItemPosition ${mLayoutManager.findFirstVisibleItemPosition()}")
+            Log.i("Logcat", "FirstCompletelyVisibleItemPosition ${mLayoutManager.findFirstCompletelyVisibleItemPosition()}")
+
+
+
+            viewModel.moveToTargetByStep(cardAdapter.getItemHeight(), mLayoutManager.findFirstCompletelyVisibleItemPosition())
+
+
+//            val ss = LinearSmoothScroller(context)
+//            ss.targetPosition = Int.MAX_VALUE - 10
+//            (rvCarousel.layoutManager as CenterZoomLayoutManagerRVc).startSmoothScroll(ss)
         }
     }
 
@@ -105,19 +113,4 @@ class FragmentRV : Fragment() {
         viewModel.setCurrentPosition(mLayoutManager.findFirstVisibleItemPosition())
         mLayoutManager.findFirstCompletelyVisibleItemPosition()
     }
-
-    // Версия бесконечной прокрутки с подменой слушателя?
-//    private fun setRecyclerViewScrollListener() {
-//        scrollListener = object : RecyclerView.OnScrollListener() {
-//            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
-//                super.onScrollStateChanged(recyclerView, newState)
-//                val totalItemCount = recyclerView!!.layoutManager.itemCount
-//                if (totalItemCount == lastVisibleItemPosition + 1) {
-//                    Log.d("MyTAG", "Load new list")
-//                    rvCarousel.removeOnScrollListener(scrollListener)
-//                }
-//            }
-//        }
-//        rvCarousel.addOnScrollListener(scrollListener)
-//    }
 }

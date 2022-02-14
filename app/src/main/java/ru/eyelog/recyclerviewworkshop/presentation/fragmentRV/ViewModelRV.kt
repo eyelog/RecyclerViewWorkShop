@@ -95,7 +95,7 @@ class ViewModelRV @Inject constructor(
     }
 
     fun startFirstPing() {
-        disposableTimeout = observableTimeout.timeout(300L, TimeUnit.MILLISECONDS)
+        disposableTimeout = observableTimeout
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 _updateVheel.postValue(true)

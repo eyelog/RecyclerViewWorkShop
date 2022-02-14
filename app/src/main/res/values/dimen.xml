@@ -3,4 +3,5 @@
     <dimen name="pageMargin">0dp</dimen>
     <dimen name="offset">1dp</dimen>
     <dimen name="pageMarginAndOffset">50dp</dimen>
+    <dimen name="barrelHeight">510dp</dimen>
 </resources>
