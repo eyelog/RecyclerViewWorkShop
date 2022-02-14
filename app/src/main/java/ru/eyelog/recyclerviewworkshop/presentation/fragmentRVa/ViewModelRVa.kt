@@ -43,7 +43,7 @@ class ViewModelRVa @Inject constructor(
     private var observable = Observable.interval(100L, TimeUnit.MILLISECONDS)
     private var observableTimeout = Observable.timer(100L, TimeUnit.MILLISECONDS)
 
-    lateinit var disposable: Disposable
+    lateinit var infinityScrollDisposable: Disposable
     lateinit var disposableTimeout: Disposable
     lateinit var startSmoothDisposable: Disposable
     lateinit var stopSmoothDisposable: Disposable
@@ -55,7 +55,7 @@ class ViewModelRVa @Inject constructor(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     private fun onCreate() {
-        currentList = cardsFactory.getCars(10)
+        currentList = cardsFactory.getCards(10)
         _cardsLiveData.postValue(currentList)
         targetPosition = Random.nextInt(10)
         _setTargetPosition.postValue(targetPosition)
@@ -64,7 +64,7 @@ class ViewModelRVa @Inject constructor(
     fun startScrolling() {
         if (!isRollScrolling) {
             isRollScrolling = true
-            disposable = observable.timeInterval()
+            infinityScrollDisposable = observable.timeInterval()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     Log.i("Logcat", "scrollDy")
@@ -84,55 +84,40 @@ class ViewModelRVa @Inject constructor(
     fun moveToTarget() {
         isRollScrolling = false
         isFinisherActive = false
-        disposable.dispose()
-        val startSmoothEmitter = Observable.range(3, 50)
+        val startSmoothEmitter = Observable.range(10, 70)
             .concatMap { i: Int ->
                 Observable.just(i)
                     .delay(100L, TimeUnit.MILLISECONDS)
-                    .map {
-                        Log.i("Logcat start", "timer ${i.toDouble().pow(3) / 300}")
-//                        Log.i("Logcat start", "timer ${((5.0.pow(2) - (i / 10).toDouble().pow(2))).toLong()}")
-                        it
-                    }
+                    .map { it }
+            }
+            .doOnSubscribe {
+                infinityScrollDisposable.dispose()
             }
             .doOnComplete {
-                Log.i("Logcat start", "doOnComplete")
                 startSmoothDisposable.dispose()
             }
         startSmoothDisposable = startSmoothEmitter
             .observeOn(AndroidSchedulers.mainThread())
-            .doFinally {
-                Log.i("Logcat start", "doFinally")
-                stopSmooth()
-            }
+            .doFinally { stopSmooth() }
             .subscribe {
-                Log.i("Logcat start", "emitter ${-(it.toDouble().pow(3) / 300).toInt()}")
-                _scrollDy.postValue(-(it.toDouble().pow(3) / 300).toInt())
-                Log.i("Logcat", "*************************")
+                val dy = -(it.toDouble().pow(3) / 500).toInt()
+                if (dy < 0){ _scrollDy.postValue(dy) }
             }
-
     }
 
     fun stopSmooth() {
-        Log.i("Logcat", "Start stop fun")
-        val stopSmoothEmitter = Observable.range(3, 50)
+        val stopSmoothEmitter = Observable.range(10, 70)
             .concatMap { i: Int ->
                 Observable.just(i)
                     .delay(100L, TimeUnit.MILLISECONDS)
-                    .map {
-                        Log.i("Logcat stop", "timer ${(50 - i).toDouble().pow(3) / 300}")
-                        50 - i
-                    }
+                    .map { 80 - i }
             }
-            .doOnComplete {
-//                stopSmoothDisposable.dispose()
-            }
+            .doFinally { stopSmoothDisposable.dispose() }
         stopSmoothDisposable = stopSmoothEmitter
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
-                Log.i("Logcat start", "emitter ${-(it.toDouble().pow(3) / 300).toInt()}")
-                _scrollDy.postValue(-((it).toDouble().pow(3) / 300).toInt())
-                Log.i("Logcat", "    ")
+                val dy = -(it.toDouble().pow(3) / 500).toInt()
+                if (dy < 0){ _scrollDy.postValue(dy) }
             }
     }
 

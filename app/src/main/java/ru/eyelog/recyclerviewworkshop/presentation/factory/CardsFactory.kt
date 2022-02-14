@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class CardsFactory @Inject constructor() {
 
-    fun getCars(cardsNumb: Int): List<CardModel> {
+    fun getCards(cardsNumb: Int): List<CardModel> {
         val outData = mutableListOf<CardModel>()
         for (i in 0..cardsNumb) {
             outData.add(

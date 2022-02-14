@@ -55,7 +55,7 @@ class ViewModelRV @Inject constructor(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     private fun onCreate() {
-        currentList = cardsFactory.getCars(10)
+        currentList = cardsFactory.getCards(10)
         _cardsLiveData.postValue(currentList)
         targetPosition = Random.nextInt(10)
         _setTargetPosition.postValue(targetPosition)
