@@ -13,7 +13,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import ru.eyelog.recyclerviewworkshop.data.CardModel
 import ru.eyelog.recyclerviewworkshop.presentation.factory.CardsFactory
-import ru.eyelog.recyclerviewworkshop.utils.toPx
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.pow
@@ -49,7 +48,6 @@ class ViewModelRVc @Inject constructor(
     lateinit var startSmoothDisposable: Disposable
     lateinit var stopSmoothDisposable: Disposable
     var isRollScrolling = false
-    var isFinisherActive = false
 
     var targetPosition = 0
     var startPosition = 0
@@ -86,57 +84,34 @@ class ViewModelRVc @Inject constructor(
             }
     }
 
-//    fun moveToTargetByStep(scipItems: Int, resources: Resources) {
-//
-//        val stepLength = resources.getDimension(R.dimen.barrelHeight).toPx / 5 * 2
-//        Log.i("Logcat", "stepLength = $stepLength")
-//        _scrollDy.postValue(-(stepLength * scipItems).toInt())
-//
-//    }
-
     fun moveToTargetByStep(itemHeight: Int, visiblePosition: Int) {
 
         infinityScrollDisposable.dispose()
 
         Log.i("Logcat", "eternal position ${Int.MAX_VALUE / 2}")
-
-//        val firstPosition = ((Int.MAX_VALUE / 2) / currentList.size) * currentList.size
-//        val localPosition = (Int.MAX_VALUE / 2) - (Int.MAX_VALUE / 2) / currentList.size
-//        Log.i("Logcat", "local firstPosition $firstPosition")
-//        Log.i("Logcat", "local position $localPosition")
-
-//        Log.i("Logcat", "itemHeight = $itemHeight")
-//        Log.i("Logcat", "currentList.size = ${currentList.size}")
         Log.i("Logcat", "targetPosition = $targetPosition")
 
-        val shiftFromStart = itemHeight  * (currentList.size * 10 - targetPosition)
-        val progressFromStart = itemHeight  * (startPosition - visiblePosition)
+        val shiftFromStart = itemHeight * (currentList.size * 10 - targetPosition)
+        val progressFromStart = itemHeight * (startPosition - visiblePosition)
 
         Log.i("Logcat", "shiftFromStart = $shiftFromStart")
         Log.i("Logcat", "progressFromStart = $progressFromStart")
 
-//
-//        val skipBlock = (itemHeight) * currentList.size * 10 + itemHeight * targetPosition
         val skipBlock = shiftFromStart - progressFromStart
-//        val shiftPosition = (itemHeight) * targetPosition
 //
         Log.i("Logcat", "skipBlock = $skipBlock")
-//        Log.i("Logcat", "shiftPosition = $shiftPosition")
-//        Log.i("Logcat", "pathCounter = $pathCounter")
-//
-//        val stepLength = skipBlock + shiftPosition
-////        setPath(-stepLength)
-//        Log.i("Logcat", "stepLength = $stepLength")
+
         _scrollDy.postValue(-skipBlock)
 
     }
 
-    fun moveToTarget(itemHeight: Int) {
-        val startPosition = pathCounter / itemHeight
-        Log.i("Logcat", "startPosition $startPosition")
+    fun moveToTarget(itemHeight: Int, visiblePosition: Int) {
         isRollScrolling = false
-        isFinisherActive = false
-        val startSmoothEmitter = Observable.range(10, 70)
+        val shiftFromStart = itemHeight * (currentList.size * 10 - targetPosition)
+        val progressFromStart = itemHeight * (startPosition - visiblePosition)
+        val skipBlock = shiftFromStart - progressFromStart
+
+        val startSmoothEmitter = Observable.range(10, 67)
             .concatMap { i: Int ->
                 Observable.just(i)
                     .delay(100L, TimeUnit.MILLISECONDS)
@@ -150,31 +125,44 @@ class ViewModelRVc @Inject constructor(
             }
         startSmoothDisposable = startSmoothEmitter
             .observeOn(AndroidSchedulers.mainThread())
-            .doFinally { stopSmooth() }
+            .doFinally { stopSmooth(skipBlock) }
             .subscribe {
                 val dy = -(it.toDouble().pow(3) / 500).toInt()
                 if (dy < 0) {
                     _scrollDy.postValue(dy)
-//                    setPath(dy)
+                    setPath(dy)
                 }
             }
     }
 
-    fun stopSmooth() {
-        val stopSmoothEmitter = Observable.range(10, 70)
+    private fun stopSmooth(skipBlock: Int) {
+        val stopSmoothEmitter = Observable.range(10, 65)
             .concatMap { i: Int ->
                 Observable.just(i)
                     .delay(100L, TimeUnit.MILLISECONDS)
-                    .map { 80 - i }
+                    .map { 75 - i }
             }
-            .doFinally { stopSmoothDisposable.dispose() }
+            .doFinally {
+                stopSmoothDisposable.dispose()
+                Log.i("Logcat", "pathCounter $pathCounter")
+                Log.i("Logcat", "skipBlock $skipBlock")
+                Log.i("Logcat", "delta ${skipBlock - pathCounter}")
+            }
         stopSmoothDisposable = stopSmoothEmitter
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 val dy = -(it.toDouble().pow(3) / 500).toInt()
-                if (dy < 0) {
-                    _scrollDy.postValue(dy)
-//                    setPath(dy)
+                val ddy = dy - (skipBlock - pathCounter) / it
+
+                Log.i("Logcat", "step $it")
+                Log.i("Logcat", "dy $dy")
+                Log.i("Logcat", "ddy $ddy")
+                Log.i("Logcat", "delta ${skipBlock - pathCounter}")
+                Log.i("Logcat", "********************************")
+
+                if (ddy < 0) {
+                    _scrollDy.postValue(ddy)
+                    setPath(dy)
                 }
             }
     }
@@ -192,6 +180,6 @@ class ViewModelRVc @Inject constructor(
 
     fun setPath(path: Int) {
         pathCounter -= path
-        Log.i("Logcat", "path = $pathCounter")
+//        Log.i("Logcat", "path = $pathCounter")
     }
 }

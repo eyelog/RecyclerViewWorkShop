@@ -1,14 +1,12 @@
 package ru.eyelog.recyclerviewworkshop.presentation.fragmentRVc
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearSnapHelper
-import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_vertical.buttonScroll
 import kotlinx.android.synthetic.main.fragment_vertical_with_tapper.rvCarousel
@@ -33,8 +31,6 @@ class FragmentRVc : Fragment() {
         itemScrollPosition
     )
 
-    private var fragmentPatchCounter = 0
-
     @Inject
     lateinit var cardAdapter: VerticalCardAdapterRVc
 
@@ -58,7 +54,7 @@ class FragmentRVc : Fragment() {
 //        rvCarousel.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 //            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
 //                super.onScrolled(recyclerView, dx, dy)
-////                Log.i("Logcat", "dy $dy")
+//                Log.i("Logcat", "dy $dy")
 //                viewModel.setPath(dy)
 //            }
 //        })
@@ -87,16 +83,9 @@ class FragmentRVc : Fragment() {
         })
 
         buttonScroll.setOnClickListener {
-//            Log.i("Logcat", "item height ${cardAdapter.getItemHeight()}")
-
-//            viewModel.moveToTarget(cardAdapter.getItemHeight())
-            Log.i("Logcat", "FirstVisibleItemPosition ${mLayoutManager.findFirstVisibleItemPosition()}")
-            Log.i("Logcat", "FirstCompletelyVisibleItemPosition ${mLayoutManager.findFirstCompletelyVisibleItemPosition()}")
-
-
-
-            viewModel.moveToTargetByStep(cardAdapter.getItemHeight(), mLayoutManager.findFirstCompletelyVisibleItemPosition())
-
+            val firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition()
+            rvCarousel.smoothScrollToPosition(firstVisibleItemPosition)
+            viewModel.moveToTarget(cardAdapter.getItemHeight(), firstVisibleItemPosition)
 
 //            val ss = LinearSmoothScroller(context)
 //            ss.targetPosition = Int.MAX_VALUE - 10
