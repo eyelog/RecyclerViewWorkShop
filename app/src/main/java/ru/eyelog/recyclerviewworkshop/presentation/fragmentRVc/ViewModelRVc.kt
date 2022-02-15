@@ -57,10 +57,10 @@ class ViewModelRVc @Inject constructor(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     private fun onStart() {
-        currentList = cardsFactory.getCards(9)
+        currentList = cardsFactory.getCards(4)
         _cardsLiveData.postValue(currentList)
         startPosition = ((Int.MAX_VALUE / 2) / currentList.size) * currentList.size - 2
-        targetPosition = Random.nextInt(9)
+        targetPosition = Random.nextInt(4)
         _setTargetPosition.postValue(targetPosition)
     }
 
@@ -105,7 +105,7 @@ class ViewModelRVc @Inject constructor(
         val progressFromStart = itemHeight * (startPosition - visiblePosition)
         val skipBlock = shiftFromStart - progressFromStart
 
-        val startSmoothEmitter = Observable.range(10, 70)
+        val startSmoothEmitter = Observable.range(20, 70)
             .concatMap { i: Int ->
                 Observable.just(i)
                     .delay(100L, TimeUnit.MILLISECONDS)
@@ -129,7 +129,7 @@ class ViewModelRVc @Inject constructor(
     }
 
     private fun stopSmooth() {
-        val stopSmoothEmitter = Observable.range(10, 150)
+        val stopSmoothEmitter = Observable.range(10, 100)
             .concatMap { i: Int ->
                 Observable.just(i)
                     .delay(100L, TimeUnit.MILLISECONDS)
@@ -143,7 +143,7 @@ class ViewModelRVc @Inject constructor(
                 if (it > 50) {
                     _finishController.postValue(targetPosition to currentList.size)
                 }
-                val dy = -(5000 / it + 30)
+                val dy = -(3000 / it + 30)
 
                 if (dy < 0) {
                     _scrollDy.postValue(dy)

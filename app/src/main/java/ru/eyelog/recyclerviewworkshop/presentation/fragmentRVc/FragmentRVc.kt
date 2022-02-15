@@ -11,8 +11,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_vertical.buttonScroll
 import kotlinx.android.synthetic.main.fragment_vertical_with_tapper.rvCarousel
 import ru.eyelog.recyclerviewworkshop.R
-import ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.localutils.SnapListenerBehavior
-import ru.eyelog.recyclerviewworkshop.presentation.fragmentRV.localutils.SnapOnScrollListener
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -22,14 +20,6 @@ class FragmentRVc : Fragment() {
 
     private val mLayoutManager = CenterZoomLayoutManagerRVc(context)
     private val snapHelper = LinearSnapHelper()
-    private val itemScrollPosition = { position: Int ->
-        viewModel.setCurrentPosition(position)
-    }
-    private val snapOnScrollListener = SnapOnScrollListener(
-        snapHelper,
-        SnapListenerBehavior.NOTIFY_ON_SCROLL,
-        itemScrollPosition
-    )
 
     var shouldControlTraffic = false
     var firstVisibleItemPosition = 0
@@ -51,8 +41,6 @@ class FragmentRVc : Fragment() {
         lifecycle.addObserver(viewModel)
 
         rvCarousel.layoutManager = mLayoutManager
-        rvCarousel.addOnScrollListener(snapOnScrollListener)
-        snapHelper.attachToRecyclerView(rvCarousel)
         rvCarousel.adapter = cardAdapter
 
         viewModel.cardsLiveData.observe(viewLifecycleOwner, {
@@ -85,15 +73,19 @@ class FragmentRVc : Fragment() {
             }
             val targetVisiblePosition = firstVisibleItemPosition - it.first + 2
             if (targetVisiblePosition % it.second == 0) {
+                attachSnapHelper()
                 viewModel.stopFinisher()
             }
         })
 
         buttonScroll.setOnClickListener {
             val firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition()
-            rvCarousel.smoothScrollToPosition(firstVisibleItemPosition)
             viewModel.moveToTarget(cardAdapter.getItemHeight(), firstVisibleItemPosition)
         }
+    }
+
+    private fun attachSnapHelper(){
+        snapHelper.attachToRecyclerView(rvCarousel)
     }
 
     private fun scrollToPosition(position: Int) {
