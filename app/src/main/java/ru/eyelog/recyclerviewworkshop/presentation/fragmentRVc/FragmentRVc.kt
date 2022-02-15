@@ -31,6 +31,9 @@ class FragmentRVc : Fragment() {
         itemScrollPosition
     )
 
+    var shouldControlTraffic = false
+    var firstVisibleItemPosition = 0
+
     @Inject
     lateinit var cardAdapter: VerticalCardAdapterRVc
 
@@ -51,13 +54,6 @@ class FragmentRVc : Fragment() {
         rvCarousel.addOnScrollListener(snapOnScrollListener)
         snapHelper.attachToRecyclerView(rvCarousel)
         rvCarousel.adapter = cardAdapter
-//        rvCarousel.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                super.onScrolled(recyclerView, dx, dy)
-//                Log.i("Logcat", "dy $dy")
-//                viewModel.setPath(dy)
-//            }
-//        })
 
         viewModel.cardsLiveData.observe(viewLifecycleOwner, {
             cardAdapter.setItem(it)
@@ -71,6 +67,7 @@ class FragmentRVc : Fragment() {
         })
 
         viewModel.scrollDy.observe(viewLifecycleOwner, {
+            firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition()
             scrollToPositionByDx(it)
         })
 
@@ -82,14 +79,20 @@ class FragmentRVc : Fragment() {
             buttonScroll.text = "Крутить до $it"
         })
 
+        viewModel.finishController.observe(viewLifecycleOwner, {
+            if (!shouldControlTraffic) {
+                shouldControlTraffic = true
+            }
+            val targetVisiblePosition = firstVisibleItemPosition - it.first + 2
+            if (targetVisiblePosition % it.second == 0) {
+                viewModel.stopFinisher()
+            }
+        })
+
         buttonScroll.setOnClickListener {
             val firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition()
             rvCarousel.smoothScrollToPosition(firstVisibleItemPosition)
             viewModel.moveToTarget(cardAdapter.getItemHeight(), firstVisibleItemPosition)
-
-//            val ss = LinearSmoothScroller(context)
-//            ss.targetPosition = Int.MAX_VALUE - 10
-//            (rvCarousel.layoutManager as CenterZoomLayoutManagerRVc).startSmoothScroll(ss)
         }
     }
 

@@ -90,5 +90,9 @@ class FragmentRVa : Fragment() {
         rvCarousel.smoothScrollBy(0, i)
         viewModel.setCurrentPosition(mLayoutManager.findFirstVisibleItemPosition())
         mLayoutManager.findFirstCompletelyVisibleItemPosition()
+
+//            val ss = LinearSmoothScroller(context)
+//            ss.targetPosition = Int.MAX_VALUE/ - 10
+//            (rvCarousel.layoutManager as CenterZoomLayoutManagerRVc).startSmoothScroll(ss)
     }
 }

@@ -1,6 +1,5 @@
 package ru.eyelog.recyclerviewworkshop.presentation.fragmentRVc
 
-import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
@@ -40,6 +39,9 @@ class ViewModelRVc @Inject constructor(
     val setTargetPosition: LiveData<Int> get() = _setTargetPosition
     private val _setTargetPosition = MediatorLiveData<Int>()
 
+    val finishController: LiveData<Pair<Int, Int>> get() = _finishController
+    private val _finishController = MediatorLiveData<Pair<Int, Int>>()
+
     private var observable = Observable.interval(100L, TimeUnit.MILLISECONDS)
     private var observableTimeout = Observable.timer(100L, TimeUnit.MILLISECONDS)
 
@@ -52,16 +54,30 @@ class ViewModelRVc @Inject constructor(
     var targetPosition = 0
     var startPosition = 0
     lateinit var currentList: List<CardModel>
-    var pathCounter = 0
-    var itemCounter = 0
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    private fun onCreate() {
+    private fun onStart() {
         currentList = cardsFactory.getCards(9)
         _cardsLiveData.postValue(currentList)
         startPosition = ((Int.MAX_VALUE / 2) / currentList.size) * currentList.size - 2
-        targetPosition = Random.nextInt(10)
+        targetPosition = Random.nextInt(9)
         _setTargetPosition.postValue(targetPosition)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    private fun onStop() {
+        if (this::infinityScrollDisposable.isInitialized) {
+            infinityScrollDisposable.dispose()
+        }
+        if (this::disposableTimeout.isInitialized) {
+            disposableTimeout.dispose()
+        }
+        if (this::startSmoothDisposable.isInitialized) {
+            startSmoothDisposable.dispose()
+        }
+        if (this::stopSmoothDisposable.isInitialized) {
+            stopSmoothDisposable.dispose()
+        }
     }
 
     fun startScrolling() {
@@ -71,7 +87,6 @@ class ViewModelRVc @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     _scrollDy.postValue(-10)
-//                    setPath(-10)
                 }
         }
     }
@@ -84,34 +99,13 @@ class ViewModelRVc @Inject constructor(
             }
     }
 
-    fun moveToTargetByStep(itemHeight: Int, visiblePosition: Int) {
-
-        infinityScrollDisposable.dispose()
-
-        Log.i("Logcat", "eternal position ${Int.MAX_VALUE / 2}")
-        Log.i("Logcat", "targetPosition = $targetPosition")
-
-        val shiftFromStart = itemHeight * (currentList.size * 10 - targetPosition)
-        val progressFromStart = itemHeight * (startPosition - visiblePosition)
-
-        Log.i("Logcat", "shiftFromStart = $shiftFromStart")
-        Log.i("Logcat", "progressFromStart = $progressFromStart")
-
-        val skipBlock = shiftFromStart - progressFromStart
-//
-        Log.i("Logcat", "skipBlock = $skipBlock")
-
-        _scrollDy.postValue(-skipBlock)
-
-    }
-
     fun moveToTarget(itemHeight: Int, visiblePosition: Int) {
         isRollScrolling = false
         val shiftFromStart = itemHeight * (currentList.size * 10 - targetPosition)
         val progressFromStart = itemHeight * (startPosition - visiblePosition)
         val skipBlock = shiftFromStart - progressFromStart
 
-        val startSmoothEmitter = Observable.range(10, 67)
+        val startSmoothEmitter = Observable.range(10, 70)
             .concatMap { i: Int ->
                 Observable.just(i)
                     .delay(100L, TimeUnit.MILLISECONDS)
@@ -125,46 +119,41 @@ class ViewModelRVc @Inject constructor(
             }
         startSmoothDisposable = startSmoothEmitter
             .observeOn(AndroidSchedulers.mainThread())
-            .doFinally { stopSmooth(skipBlock) }
+            .doFinally { stopSmooth() }
             .subscribe {
                 val dy = -(it.toDouble().pow(3) / 500).toInt()
                 if (dy < 0) {
                     _scrollDy.postValue(dy)
-                    setPath(dy)
                 }
             }
     }
 
-    private fun stopSmooth(skipBlock: Int) {
-        val stopSmoothEmitter = Observable.range(10, 65)
+    private fun stopSmooth() {
+        val stopSmoothEmitter = Observable.range(10, 150)
             .concatMap { i: Int ->
                 Observable.just(i)
                     .delay(100L, TimeUnit.MILLISECONDS)
-                    .map { 75 - i }
             }
             .doFinally {
                 stopSmoothDisposable.dispose()
-                Log.i("Logcat", "pathCounter $pathCounter")
-                Log.i("Logcat", "skipBlock $skipBlock")
-                Log.i("Logcat", "delta ${skipBlock - pathCounter}")
             }
         stopSmoothDisposable = stopSmoothEmitter
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
-                val dy = -(it.toDouble().pow(3) / 500).toInt()
-                val ddy = dy - (skipBlock - pathCounter) / it
+                if (it > 50) {
+                    _finishController.postValue(targetPosition to currentList.size)
+                }
+                val dy = -(5000 / it + 30)
 
-                Log.i("Logcat", "step $it")
-                Log.i("Logcat", "dy $dy")
-                Log.i("Logcat", "ddy $ddy")
-                Log.i("Logcat", "delta ${skipBlock - pathCounter}")
-                Log.i("Logcat", "********************************")
-
-                if (ddy < 0) {
-                    _scrollDy.postValue(ddy)
-                    setPath(dy)
+                if (dy < 0) {
+                    _scrollDy.postValue(dy)
                 }
             }
+    }
+
+    fun stopFinisher() {
+        stopSmoothDisposable.dispose()
+        infinityScrollDisposable.dispose()
     }
 
     private fun getFirstNumberAfterDot(a: Int, b: Int): Int {
@@ -176,10 +165,5 @@ class ViewModelRVc @Inject constructor(
 
     fun setCurrentPosition(position: Int) {
         currentPosition = position
-    }
-
-    fun setPath(path: Int) {
-        pathCounter -= path
-//        Log.i("Logcat", "path = $pathCounter")
     }
 }
